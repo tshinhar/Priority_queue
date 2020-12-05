@@ -17,6 +17,8 @@ int check_malloc(const void* pointer) {
 
 
 int queue_to_int(Node* head) {
+	// gets a queue of digits and retuens the number they represents 
+	//given they are ordered from LSB to MSB
 	int num = 0, position = 1;
 	while (head != NULL) {
 		num = num + position * top(head);
@@ -27,8 +29,9 @@ int queue_to_int(Node* head) {
 }
 
 
-Node* file_to_queue(char* file_path, int num_of_lines)
-{
+Node* file_to_queue(char* file_path)
+{	//gets path to file/file name and returns a queue 
+	//with each node containing the value in the coresponding line
 	FILE* file_pointer = NULL;
 	fopen_s(&file_pointer, file_path, "r");
 	if (file_pointer == 0)
@@ -37,12 +40,12 @@ Node* file_to_queue(char* file_path, int num_of_lines)
 		exit(EXIT_FAILURE);
 	}
 	char current_char;
-	int num_in_line, temp; // the number written in the line
+	int num_in_line, temp;
 	Node *head = NULL;
 	Node* line_queue_head = NULL;
 	while ((current_char = (char)fgetc(file_pointer)) != EOF) {
 		if (current_char != '\r' && current_char != '\n') {
-			temp = current_char - '0';
+			temp = current_char - '0'; // we know that the line contines digits only
 			if (line_queue_head == NULL)
 				line_queue_head = initialize_queue(temp);
 			else 

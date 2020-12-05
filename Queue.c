@@ -2,7 +2,10 @@
 //Project - Queue
 
 
-//Description - this modul implemets the queue using linked list
+//Description - this modul implemets the queue using linked list 
+//with head being the first item in the queue
+//the linked list is also used for other functionalitys in the project, 
+//so some extra methodes are implemented
 
 
 #include "Queue.h"
@@ -20,12 +23,14 @@ Node* create_new_node(int value) {
 
 
 Node* initialize_queue(int value) {
+	//creates a new queue by creating a node and returning it as the head of the queue
 	Node* new_node = create_new_node(value);
 	return new_node;
 }
 
 
 Node* push_to_beginning(Node* head, int value) {
+	//adds a node to the head of the queue
 	Node* new_node = create_new_node(value);
 	new_node->next = head;
 	return new_node;
@@ -33,6 +38,7 @@ Node* push_to_beginning(Node* head, int value) {
 
 
 void destroy_queue(Node* head) {
+	//frees all nodes in the queue
 	while (head != NULL) {
 		Node* next_node = head->next;
 		free(head);
@@ -42,6 +48,7 @@ void destroy_queue(Node* head) {
 
 
 Node* push(Node* head, int value) {
+	//creates a new node and addes it to the end of the queue
 	Node* new_node = create_new_node(value);
 	if (head == NULL)
 		return new_node;
@@ -56,23 +63,24 @@ Node* push(Node* head, int value) {
 
 
 Node* pop(Node* head) {
+	// removes the first item from the queue
 	if (head == NULL) {
 		printf("Error - can't remove a node from an empty list\n");
 	}
-	
 	Node* new_head = head->next;
 	free(head);
 	return new_head;
-	
 }
 
 
 int top(Node* head) {
+	//returns the first item in the queue
 	return head->data;
 }
 
 
 int empty(Node* head) {
+	//checks if the queue is empty
 	if (head == NULL)
 		return true;
 	return false;
@@ -80,6 +88,7 @@ int empty(Node* head) {
 
 
 void print_list(Node* head) {
+	//for debugging - prints the queue
 	if (head == NULL) {
 		printf("[]\n");
 		return;
