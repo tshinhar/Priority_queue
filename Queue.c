@@ -19,8 +19,16 @@ Node* create_new_node(int value) {
 }
 
 
-Node* initialize_queue() {
-	return create_new_node(NULL);
+Node* initialize_queue(int value) {
+	Node* new_node = create_new_node(value);
+	return new_node;
+}
+
+
+Node* push_to_beginning(Node* head, int value) {
+	Node* new_node = create_new_node(value);
+	new_node->next = head;
+	return new_node;
 }
 
 

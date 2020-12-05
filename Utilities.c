@@ -16,6 +16,50 @@ int check_malloc(const void* pointer) {
 }
 
 
+int queue_to_int(Node* head) {
+	int num = 0, position = 1;
+	while (head != NULL) {
+		num = num + position * top(head);
+		head = pop(head); // using pop also frees the memory taken by the node
+		position = position * 10;
+	}
+	return num;
+}
+
+
+Node* file_to_queue(char* file_path, int num_of_lines)
+{
+	FILE* file_pointer = NULL;
+	fopen_s(&file_pointer, file_path, "r");
+	if (file_pointer == 0)
+	{
+		printf("couldn't read file");
+		exit(EXIT_FAILURE);
+	}
+	char current_char;
+	int num_in_line, temp; // the number written in the line
+	Node *head = NULL;
+	Node* line_queue_head = NULL;
+	while ((current_char = (char)fgetc(file_pointer)) != EOF) {
+		if (current_char != '\r' && current_char != '\n') {
+			temp = current_char - '0';
+			if (line_queue_head == NULL)
+				line_queue_head = initialize_queue(temp);
+			else 
+				line_queue_head = push_to_beginning(line_queue_head, temp);
+		}
+		else
+			if (current_char == '\n') {
+				num_in_line = queue_to_int(line_queue_head);//this will also free the line queue
+				head = push(head, num_in_line);
+				line_queue_head = NULL;
+			}
+	}
+	fclose(file_pointer);
+	return head;
+}
+
+
 HANDLE create_file(char* file_path, char mode) {
 	// this function creates a file and returns the handle, mode is indicating read or write
 	HANDLE* hFile;

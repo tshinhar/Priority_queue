@@ -8,11 +8,13 @@ typedef struct node {
 	struct node* next;
 }Node;
 
-Node* initialize_queue();
+Node* initialize_queue(int value);
 
 void destroy_queue(Node* head);
 
 Node* push(Node* head, int value);
+
+Node* push_to_beginning(Node* head, int value);
 
 Node* pop(Node* head);
 
