@@ -1,3 +1,9 @@
+//Authors - Tomer Shinhar 205627524 Yael schwartz 206335010
+//Project - prime_number
+
+//Description - this modul contains functions related to breaking down a number to its 
+//prime elements and outpiting it to file in the requested format
+
 #include "prime_number.h"
 
 
@@ -43,7 +49,7 @@ int* create_prime_numbers_array(int number, int* array_size)
 }
 
 void sort_primary_array(int* prime_numbers_array, int array_size)
-{
+{   // this function sorts the arry of prime elements by size
     for (int i = 0; i < array_size; i++)
     {
 
@@ -66,14 +72,14 @@ void sort_primary_array(int* prime_numbers_array, int array_size)
 
 int write_output_file(HANDLE* hTarget, int number, int* prime_numbers_array, int array_size)
 {
+    // this function creates the requested string format for the output and writes it to the file given by the HANDLE
     char addition[PRIME_MAX_WIDTH + 2];// extra 2 chars for ", "
     char start_of_string[TEXT_LEN + PRIME_MAX_WIDTH];
     sprintf_s(start_of_string, sizeof(start_of_string), "The prime factors of %d are:", number);
     int line_size_in_bytes = (sizeof(start_of_string) + sizeof(addition) * (array_size)) * sizeof(char);
-    char* output_string = (char*)malloc(line_size_in_bytes);//for some reason the sizeof(output_string) is allways 4, not matter what I do- as the warning says
+    char* output_string = (char*)malloc(line_size_in_bytes);
     if (output_string)
     {
-        //*output_string = '\0';//setting the first character to the null character will give an empty string:
         strcpy_s(output_string, line_size_in_bytes, start_of_string);//"The prime factors of [number] are: "
         for (int i = 0; i < array_size; i++)
         {
@@ -96,11 +102,16 @@ int write_output_file(HANDLE* hTarget, int number, int* prime_numbers_array, int
         }
         free(output_string);
     }
+    else {
+        printf("Error- malloc failed\n");
+        return 1;
+    }
     return 0;
 }
 
 int get_num_out_of_buff(char* buff)
 {
+    // this functoin gets a string that was read from the file, cuts it and converts it to int
     int buff_as_int = -1;
     for (int i = 0; i < BUFFER_SIZE; i++)
     {
@@ -111,5 +122,7 @@ int get_num_out_of_buff(char* buff)
             break;
         }
     }
+    if (buff_as_int == -1)
+        printf("Error converting string number to int");
     return buff_as_int;
 }

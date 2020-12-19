@@ -1,3 +1,8 @@
+//Authors - Tomer Shinhar 205627524 Yael schwartz 206335010
+//Project - prime_number
+
+//Description - this modul manages the threads and their access to the file for reading/writing
+
 #include "file_accessing.h"
 
 
@@ -8,6 +13,7 @@ HANDLE queue_access;
 
 int exec_missions(char* mission_file_path, int num_of_missions, int num_of_threads, Node* queue)
 {
+    // this function creates the threads and wait for them to finish running
     lock = initialize_lock();
     THREAD_ARGS thread_args;
     queue_access = CreateSemaphore(NULL, 1, 1, NULL);
@@ -55,6 +61,8 @@ int exec_missions(char* mission_file_path, int num_of_missions, int num_of_threa
 
 DWORD WINAPI exec_missions_thread(LPVOID lpParam)
 {
+    // this function defines the operation of each thread - getting offset from queue
+    //reading number from file, breaking it down and printing the result
     int array_of_prime_number_size;
     int* prime_numbers_array = NULL;
 
@@ -78,7 +86,11 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
         read_lock(lock);
         source = create_file(input_file_path, 'r');
         DWORD first_byte_pointer = SetFilePointer(source, offset, NULL, FILE_BEGIN);
-        if (!ReadFile(source, buff, sizeof(buff), &dwBytesRead, NULL)) { //this is a simple read, we need to extract the line from it
+        if (first_byte_pointer == INVALID_SET_FILE_POINTER) {
+            printf("Falied setting file pointer");
+            return EXIT_FAILURE;
+        }
+        if (!ReadFile(source, buff, sizeof(buff), &dwBytesRead, NULL)) { 
             printf("Source file not read from. Error %u", GetLastError());
             CloseHandle(source);
             return EXIT_FAILURE;
@@ -88,13 +100,18 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
         release_read(lock);
 
         int num_to_break = get_num_out_of_buff(buff);
-
+        if (num_to_break == -1)
+            return EXIT_FAILURE;
         prime_numbers_array = create_prime_numbers_array(num_to_break, &array_of_prime_number_size);// create_prime_numbers_array function is in prime_number.c
         sort_primary_array(prime_numbers_array, array_of_prime_number_size);
 
         write_lock(lock);
         HANDLE output = create_file(input_file_path, 'a');
         first_byte_pointer = SetFilePointer(output, 0, NULL, FILE_END);
+        if (first_byte_pointer == INVALID_SET_FILE_POINTER) {
+            printf("Falied setting file pointer");
+            return EXIT_FAILURE;
+        }
         if (0 != write_output_file(output, num_to_break, prime_numbers_array, array_of_prime_number_size)) {
             CloseHandle(output);
             free(prime_numbers_array);
