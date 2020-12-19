@@ -4,6 +4,7 @@
 
 #include "Queue.h"
 #include "utilities.h"
+#include "file_accessing.h"
 
 
 int main(int argc, char* argv[]) {
@@ -11,10 +12,19 @@ int main(int argc, char* argv[]) {
 		printf("incorrect number of arguments");
 		exit(-1);
 	}
-	int num_of_threads, num_of_tasks;
+	char *mission_file_path, *priority_file;
+	int num_of_threads, num_of_tasks, status;
+	mission_file_path = argv[1];
+	priority_file = argv[2];
 	num_of_threads = atoi(argv[4]);
 	num_of_tasks = atoi(argv[3]);
 	// load tasks file to the queue
-	Node* head = file_to_queue(argv[2], num_of_tasks);
-	return 0;
+	Node* queue = file_to_queue(argv[2]);
+	// call function to create threads and execute
+	status = exec_missions(mission_file_path, num_of_tasks, num_of_threads, queue);
+	if (status == 1) { // there was an issue
+		printf("had an issue executing the missions");
+		destroy_queue(queue);// if everything is working fine queue is freed by the threads
+	}
+	return status;
 }

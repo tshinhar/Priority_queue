@@ -73,14 +73,18 @@ HANDLE create_file(char* file_path, char mode) {
 		if (mode == 'w') {
 			hFile = CreateFileA(file_path, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		}
+		else
+			if (mode == 'a') {
+			hFile = CreateFileA(file_path, FILE_APPEND_DATA, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		}
 		else {
-			printf("ERROR: not 'r' or 'w' for file");
+			printf("ERROR: not 'r', 'a' or 'w' for file");
 			return NULL;
 		}
 
 	// Check for error
 	if (hFile == INVALID_HANDLE_VALUE) {
-		printf("File not created. Error %u", GetLastError());
+		printf("Target file not created. Error %u", GetLastError());
 		return NULL;
 	}
 	return hFile;
@@ -93,4 +97,15 @@ void close_handles_of_threads(HANDLE* thread_handles, int num_of_threads)
 	{
 		CloseHandle(thread_handles[i]);
 	}
+}
+
+
+int check_realloc(const void* pointer)
+{
+	if (!pointer)
+	{
+		printf("ERROR - malloc failed\n");
+		return 1;
+	}
+	return 0;
 }

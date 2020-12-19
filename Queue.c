@@ -15,7 +15,7 @@
 Node* create_new_node(int value) {
 	Node* new_node = (Node*)malloc(sizeof(Node));
 	if (check_malloc(new_node) == 1)
-		exit(EXIT_FAILURE);
+		return NULL;
 	new_node->data = value;
 	new_node->next = NULL;
 	return new_node;
@@ -50,6 +50,10 @@ void destroy_queue(Node* head) {
 Node* push(Node* head, int value) {
 	//creates a new node and addes it to the end of the queue
 	Node* new_node = create_new_node(value);
+	if (new_node == NULL) {
+		printf("node creation failed");
+		return NULL;
+	}
 	if (head == NULL)
 		return new_node;
 	Node* current_node = head;
@@ -66,6 +70,7 @@ Node* pop(Node* head) {
 	// removes the first item from the queue
 	if (head == NULL) {
 		printf("Error - can't remove a node from an empty list\n");
+		return NULL;
 	}
 	Node* new_head = head->next;
 	free(head);
