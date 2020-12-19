@@ -4,6 +4,7 @@
 
 #define PRIME_MAX_WIDTH 12 //all numbers that are representable by int will fit in a 12-char-array without overflow unless our compiler is somehow using more than 32-bits for int (the maximum number of 99,999,999 is below 2^32)
 #define TEXT_LEN 26
+#define BUFFER_SIZE 10
 
 int* create_prime_numbers_array(int number, int* array_size);
 void sort_primary_array(int* prime_numbers_array, int array_size);

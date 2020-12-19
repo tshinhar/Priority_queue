@@ -1,17 +1,24 @@
 #include "file_accessing.h"
 
 
-//global variable
+//global variables
 Lock* lock;
+HANDLE queue_access;
 
 
 int exec_missions(char* mission_file_path, int num_of_missions, int num_of_threads, Node* queue)
 {
     lock = initialize_lock();
     THREAD_ARGS thread_args;
+    queue_access = CreateSemaphore(NULL, 1, 1, NULL);
+    if (queue_access == NULL || lock == NULL){
+        printf("Error creating locks");
+        return EXIT_FAILURE;
+    }
     HANDLE* thread_handles = (HANDLE*)(malloc(sizeof(HANDLE) * num_of_threads));
     if (check_malloc(thread_handles) != 0) {// there was an error with thread_handles
         destroy_lock(lock);
+        CloseHandle(queue_access);
         return EXIT_FAILURE;
     }
     for (int i = 0; i < num_of_threads; i++) {
@@ -23,20 +30,23 @@ int exec_missions(char* mission_file_path, int num_of_missions, int num_of_threa
             close_handles_of_threads(thread_handles, num_of_threads);//closes each of the handles which are in the array "thread_handles" (could be that only one of the thread handles has failed, and the rest needs to be released)
             free(thread_handles);
             destroy_lock(lock);
+            CloseHandle(queue_access);
             return EXIT_FAILURE;
         }
     }
-    int wait_mul_objects = WaitForMultipleObjects(num_of_threads, thread_handles, true, 20000); // 20 seconds
+    int wait_mul_objects = WaitForMultipleObjects(num_of_threads, thread_handles, true, TIMEOUT); // 20 seconds
     if (wait_mul_objects != WAIT_OBJECT_0)//if WaitForMultipleObjects failed
     {
         printf("wait failed faild\n");
         destroy_lock(lock);
         close_handles_of_threads(thread_handles, num_of_threads);//closes each of the handles which are in the array "thread_handles"
         free(thread_handles);
+        CloseHandle(queue_access);
         return EXIT_FAILURE;
     }
     destroy_lock(lock);
     close_handles_of_threads(thread_handles, num_of_threads);//closes each of the handles which are in the array "thread_handles"
+    CloseHandle(queue_access);
     free(thread_handles);
     return 0;
 }
@@ -56,8 +66,14 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
     HANDLE source = NULL;
     while (!empty(thread_args->queue)) {
         //get offset from the queue
+        int wait_obj = WaitForSingleObject(queue_access, 5000);// wait 5 seconds to get to the queue
+        if (wait_obj != WAIT_OBJECT_0) {//if wait failed
+            printf("Timeout wating for other threads");
+            return EXIT_FAILURE;
+        }
         int offset = top(thread_args->queue);
         thread_args->queue = pop(thread_args->queue);
+        ReleaseSemaphore(queue_access, 1, NULL);
         //read from file with the given offset
         source = create_file(input_file_path, 'r');
         DWORD first_byte_pointer = SetFilePointer(source, offset, NULL, FILE_BEGIN);
@@ -68,7 +84,7 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
         release_read(lock);
         CloseHandle(source);
 
-        int num_to_break = get_num_out_of_buff(buff);// 
+        int num_to_break = get_num_out_of_buff(buff);
 
         prime_numbers_array = create_prime_numbers_array(num_to_break, &array_of_prime_number_size);// create_prime_numbers_array function is in prime_number.c
         sort_primary_array(prime_numbers_array, array_of_prime_number_size);

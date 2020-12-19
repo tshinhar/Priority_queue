@@ -102,9 +102,9 @@ int write_output_file(HANDLE* hTarget, int number, int* prime_numbers_array, int
 int get_num_out_of_buff(char* buff)
 {
     int buff_as_int = -1;
-    for (int i = 0; i < sizeof(buff); i++)
+    for (int i = 0; i < BUFFER_SIZE; i++)
     {
-        if (buff[i] == '\r')
+        if (buff[i] == '\r' || buff[i] == '\n')
         {
             buff[i] = '\0';
             buff_as_int = atoi(buff);

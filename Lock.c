@@ -9,9 +9,6 @@
 #include "Lock.h"
 
 
-#define TIMEOUT 5000
-
-
 Lock* initialize_lock() {
 	Lock* new_lock = (Lock*)malloc(sizeof(Lock));
 	if (check_malloc(new_lock) == 1)

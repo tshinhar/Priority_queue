@@ -3,7 +3,6 @@
 #include "Lock.h"
 #include "prime_number.h"
 
-#define BUFFER_SIZE 10
 #define MAX_NUM_DIGITS 8
 
 typedef struct {

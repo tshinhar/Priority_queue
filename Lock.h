@@ -1,5 +1,7 @@
 #include "utilities.h"
 
+#define TIMEOUT 2000000
+
 typedef struct lock {
 	HANDLE semaphore_signal;
 	HANDLE mutex_block;
