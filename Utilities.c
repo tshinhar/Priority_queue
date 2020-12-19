@@ -75,7 +75,7 @@ HANDLE create_file(char* file_path, char mode) {
 		}
 		else
 			if (mode == 'a') {
-			hFile = CreateFileA(file_path, FILE_APPEND_DATA, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			hFile = CreateFileA(file_path, FILE_APPEND_DATA, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		}
 		else {
 			printf("ERROR: not 'r', 'a' or 'w' for file");

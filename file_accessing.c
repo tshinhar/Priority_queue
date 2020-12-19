@@ -80,6 +80,8 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
         read_lock(lock);
         if (!ReadFile(source, buff, sizeof(buff), &dwBytesRead, NULL)) { //this is a simple read, we need to extract the line from it
             printf("Source file not read from. Error %u", GetLastError());
+            CloseHandle(source);
+            return EXIT_FAILURE;
         }
         release_read(lock);
         CloseHandle(source);
@@ -92,7 +94,7 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
         HANDLE output = create_file(input_file_path, 'a');
         first_byte_pointer = SetFilePointer(output, 0, NULL, FILE_END);
         write_lock(lock);
-        if (!write_output_file(output, num_to_break, prime_numbers_array, array_of_prime_number_size)) {
+        if (0 != write_output_file(output, num_to_break, prime_numbers_array, array_of_prime_number_size)) {
             CloseHandle(output);
             free(prime_numbers_array);
             return EXIT_FAILURE;

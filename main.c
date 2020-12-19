@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 	Node* queue = file_to_queue(argv[2]);
 	// call function to create threads and execute
 	status = exec_missions(mission_file_path, num_of_tasks, num_of_threads, queue);
-	if (status == 1) { // there was an issue
+	if (status == EXIT_FAILURE) { // there was an issue
 		printf("had an issue executing the missions");
 		destroy_queue(queue);// if everything is working fine queue is freed by the threads
 	}
