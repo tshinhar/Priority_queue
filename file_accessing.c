@@ -75,32 +75,34 @@ DWORD WINAPI exec_missions_thread(LPVOID lpParam)
         thread_args->queue = pop(thread_args->queue);
         ReleaseSemaphore(queue_access, 1, NULL);
         //read from file with the given offset
+        read_lock(lock);
         source = create_file(input_file_path, 'r');
         DWORD first_byte_pointer = SetFilePointer(source, offset, NULL, FILE_BEGIN);
-        read_lock(lock);
         if (!ReadFile(source, buff, sizeof(buff), &dwBytesRead, NULL)) { //this is a simple read, we need to extract the line from it
             printf("Source file not read from. Error %u", GetLastError());
             CloseHandle(source);
             return EXIT_FAILURE;
         }
-        release_read(lock);
+        printf("line read from file\n");
         CloseHandle(source);
+        release_read(lock);
 
         int num_to_break = get_num_out_of_buff(buff);
 
         prime_numbers_array = create_prime_numbers_array(num_to_break, &array_of_prime_number_size);// create_prime_numbers_array function is in prime_number.c
         sort_primary_array(prime_numbers_array, array_of_prime_number_size);
 
+        write_lock(lock);
         HANDLE output = create_file(input_file_path, 'a');
         first_byte_pointer = SetFilePointer(output, 0, NULL, FILE_END);
-        write_lock(lock);
         if (0 != write_output_file(output, num_to_break, prime_numbers_array, array_of_prime_number_size)) {
             CloseHandle(output);
             free(prime_numbers_array);
             return EXIT_FAILURE;
         }
-        write_release(lock);
+        printf("line was written to file\n");
         CloseHandle(output);
+        write_release(lock);
         free(prime_numbers_array);
     }
     return 0;

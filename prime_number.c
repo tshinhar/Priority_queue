@@ -89,7 +89,7 @@ int write_output_file(HANDLE* hTarget, int number, int* prime_numbers_array, int
         }
         strcpy_s(addition, sizeof(addition), "\r\n");
         strcat_s(output_string, line_size_in_bytes, addition);
-        if (FALSE == WriteFile(hTarget, output_string, line_size_in_bytes, NULL, NULL)){
+        if (FALSE == WriteFile(hTarget, output_string, strlen(output_string), NULL, NULL)){
             printf("Error writing to file");
             free(output_string);
             return EXIT_FAILURE;
